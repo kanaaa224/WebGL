@@ -1,0 +1,133 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+
+		<style>
+			body {
+				margin: 0;
+			}
+			footer {
+				position: absolute;
+				bottom: 0;
+
+				width: 100%;
+
+				padding: 0;
+				margin: 0;
+
+				display: flex;
+    			justify-content: center;
+
+				color: #fff;
+
+				& p {
+					padding: 0;
+					margin: 0;
+
+					font-family: sans-serif;
+					font-size: 16px;
+				}
+			}
+		</style>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.152.2/build/three.module.js",
+					"three/addons/": "https://unpkg.com/three@0.152.2/examples/jsm/"
+				}
+			}
+		</script>
+		<script type="module">
+			import * as THREE from 'three';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+			window.addEventListener('DOMContentLoaded', init);
+
+			function init() {
+				const width  = window.innerWidth;
+				const height = window.innerHeight;
+
+				const canvasElement = document.querySelector('#canvas');
+
+				// レンダラーを作成
+				const renderer = new THREE.WebGLRenderer({
+					canvas: canvasElement,
+				});
+				renderer.setSize(width, height);
+
+				// シーンを作成
+				const scene = new THREE.Scene();
+
+				// カメラを作成
+				const camera = new THREE.PerspectiveCamera(45, width / height);
+
+				// カメラの初期座標を設定
+				camera.position.set(0, 0, 1000);
+
+				// カメラコントローラーを作成
+				const controls = new OrbitControls(camera, canvasElement);
+
+				// 滑らかにカメラコントローラーを制御
+				controls.enableDamping = true;
+				controls.dampingFactor = 0.2;
+
+				// 箱のメッシュ
+				const mesh = new THREE.Mesh(new THREE.BoxGeometry(300, 300, 300), new THREE.MeshNormalMaterial());
+      			scene.add(mesh);
+
+				// 星を作成
+				createStarField();
+
+				function createStarField() {
+					// 頂点情報を格納
+					const vertices = [];
+
+					// 1000 個の頂点を作成
+					for (let i = 0; i < 1000; i++) {
+						const x = 3000 * (Math.random() - 0.5);
+						const y = 3000 * (Math.random() - 0.5);
+						const z = 3000 * (Math.random() - 0.5);
+
+						vertices.push(x, y, z);
+					};
+
+					// 形状データを作成
+					const geometry = new THREE.BufferGeometry();
+					geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+					// マテリアルを作成
+					const material = new THREE.PointsMaterial({
+						size: 10,
+						color: 0xffffff,
+					});
+
+					// 物体を作成
+					const mesh = new THREE.Points(geometry, material);
+					scene.add(mesh);
+				};
+
+				tick();
+
+				// 毎フレーム時に実行されるループイベント
+				function tick() {
+					// 箱を常に回転
+					mesh.rotation.y += 0.001;
+
+					// カメラコントローラーを更新
+					controls.update();
+
+					// レンダリング
+					renderer.render(scene, camera);
+
+					requestAnimationFrame(tick);
+				};
+			};
+		</script>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		<footer>
+			<p>マウスでカメラ移動 | &copy;&nbsp;2021&nbsp;<a href="//github.com/kanaaa224/" style="color: inherit;"><u>kanaaa224</u></a>.</p>
+		</footer>
+	</body>
+</html>
