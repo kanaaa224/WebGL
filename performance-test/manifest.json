@@ -1,0 +1,11 @@
+{
+    "name": "performance-test",
+    "icons": [
+        {
+            "src": "https://github.com/kanaaa224.png",
+            "sizes": "512x512"
+        }
+    ],
+
+    "display": "standalone"
+}
